@@ -96,7 +96,6 @@ AUTH0_DOMAIN=dev-xxxxxxxxxx.us.auth0.com
 AUTH0_CLIENT_ID=your_client_id
 AUTH0_CLIENT_SECRET=your_client_secret
 AUTH0_REDIRECT_URL=http://localhost:8080/callback
-SESSION_SECRET=generate_random_string_min_32_chars
 ```
 
 ### 4. Запуск
@@ -154,29 +153,46 @@ go run main.go
 
 ---
 
+## Configuration
+
+| Variable | Required | Default | Description |
+|----------|:--------:|---------|-------------|
+| `AUTH0_DOMAIN` | Yes | - | Auth0 domain |
+| `AUTH0_CLIENT_ID` | Yes | - | Auth0 client ID |
+| `AUTH0_CLIENT_SECRET` | Yes | - | Auth0 client secret |
+| `AUTH0_REDIRECT_URL` | Yes | - | Callback URL |
+| `PORT` | No | `8080` | Server port |
+| `SESSION_SECRET` | No | random | Session encryption key |
+| `GIN_MODE` | No | `debug` | `debug` or `release` |
+
+---
+
 ## Project Structure
 
 ```
 OAuth_2.0/
-├── main.go                # Server, handlers, middleware
-├── go.mod                 # Go module
-├── go.sum                 # Dependencies checksum
-├── .env.example           # Environment template
-├── LICENSE                # MIT License
-├── README.md
+├── main.go              # Entry point + graceful shutdown
+├── config/
+│   └── config.go        # Config, env loading, OIDC provider
+├── handlers/
+│   ├── auth.go          # Login, Logout, Callback
+│   └── pages.go         # Home, Profile
+├── middleware/
+│   └── auth.go          # IsAuthenticated
+├── models/
+│   └── user.go          # UserInfo struct
+├── utils/
+│   └── utils.go         # GenerateRandomString
+├── routes/
+│   └── routes.go        # Route registration
+├── web/
+│   ├── static/img/      # Assets
+│   └── template/        # HTML templates
 ├── docs/
-│   ├── demo.gif           # Demo GIF
-│   └── demo.mp4           # Demo Video
-└── web/
-    ├── static/
-    │   └── img/
-    │       ├── google.png
-    │       └── password.png
-    └── template/
-        ├── header.html
-        ├── footer.html
-        ├── home.html
-        └── profile.html
+│   ├── demo.gif         # Demo GIF
+│   └── demo.mp4         # Demo Video
+├── .env.example         # Environment template
+└── LICENSE              # MIT
 ```
 
 ---
