@@ -7,7 +7,6 @@ import (
 	"encoding/gob" // Регистрация типов для сериализации в сессиях
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -18,6 +17,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 )
 
@@ -28,7 +28,7 @@ type UserInfo struct {
 	Nickname      string    `json:"nickname"`
 	Name          string    `json:"name"`
 	Picture       string    `json:"picture"`
-	UpdatedAt     int64     `json:"updated_at"`
+	UpdatedAt     string    `json:"updated_at"`
 	Email         string    `json:"email"`
 	EmailVerified bool      `json:"email_verified"`
 }
@@ -216,28 +216,8 @@ func (s *server) callbackHandler(ctx *gin.Context) {
 		return
 	}
 
-	// Получаем информацию о пользователе для отображения в профиле
-	client := s.oauth2Config.Client(ctx, token)
-	resp, err := client.Get("https://" + os.Getenv("AUTH0_DOMAIN") + "/userinfo")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch user information"})
-		return
-	}
-	defer resp.Body.Close()
-
-	// Парсим тело ответа
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not parse response body"})
-		return
-	}
-
-	// Сохраняем access token и тело ответа в cookie
-	// (Примечание: cookie должен быть зашифрован перед сохранением)
-	// u -> userInfo
-	ctx.SetCookie("u", string(b), int(time.Now().Add(1*time.Hour).Unix()), "/", "", false, true)
-	// at -> access token
-	ctx.SetCookie("at", token.AccessToken, int(time.Now().Add(1*time.Hour).Unix()), "/", "", false, true)
+	// Сохраняем access token в cookie
+	ctx.SetCookie("at", token.AccessToken, 3600, "/", "", false, true)
 
 	// Извлекаем ID токен из ответа
 	rawIDToken, ok := token.Extra("id_token").(string)
@@ -287,6 +267,11 @@ func (s *server) callbackHandler(ctx *gin.Context) {
 }
 
 func main() {
+	// Загружаем переменные из .env файла
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, using environment variables")
+	}
+
 	// Регистрируем тип map для gob, чтобы можно было сохранять в сессии
 	gob.Register(map[string]interface{}{})
 
@@ -358,18 +343,18 @@ func main() {
 			return
 		}
 
-		// Получаем информацию о пользователе из cookie
-		userInfo, err := ctx.Cookie("u")
+		// Десериализуем claims из сессии в структуру UserInfo
+		claimsJSON, err := json.Marshal(user)
 		if err != nil {
-			// Если cookie с информацией о пользователе не существует, перенаправляем на главную
+			log.Printf("Error marshaling user claims: %v", err)
 			ctx.Redirect(http.StatusTemporaryRedirect, "/")
 			return
 		}
 
-		// Десериализуем значение в структуру UserInfo
 		var u UserInfo
-		if err := json.Unmarshal([]byte(userInfo), &u); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "something wrong. Please try logging in again"})
+		if err := json.Unmarshal(claimsJSON, &u); err != nil {
+			log.Printf("Error unmarshaling user claims: %v", err)
+			ctx.Redirect(http.StatusTemporaryRedirect, "/")
 			return
 		}
 
