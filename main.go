@@ -28,7 +28,7 @@ type UserInfo struct {
 	Nickname      string    `json:"nickname"`
 	Name          string    `json:"name"`
 	Picture       string    `json:"picture"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	UpdatedAt     int64     `json:"updated_at"`
 	Email         string    `json:"email"`
 	EmailVerified bool      `json:"email_verified"`
 }
@@ -235,9 +235,9 @@ func (s *server) callbackHandler(ctx *gin.Context) {
 	// Сохраняем access token и тело ответа в cookie
 	// (Примечание: cookie должен быть зашифрован перед сохранением)
 	// u -> userInfo
-	ctx.SetCookie("u", string(b), int(time.Now().Add(1*time.Hour).Unix()), "/", "", true, true)
+	ctx.SetCookie("u", string(b), int(time.Now().Add(1*time.Hour).Unix()), "/", "", false, true)
 	// at -> access token
-	ctx.SetCookie("at", token.AccessToken, int(time.Now().Add(1*time.Hour).Unix()), "/", "", true, true)
+	ctx.SetCookie("at", token.AccessToken, int(time.Now().Add(1*time.Hour).Unix()), "/", "", false, true)
 
 	// Извлекаем ID токен из ответа
 	rawIDToken, ok := token.Extra("id_token").(string)
@@ -375,7 +375,7 @@ func main() {
 
 		// Отображаем страницу профиля с данными пользователя
 		ctx.HTML(http.StatusOK, "profile.html", gin.H{
-			"profile": u,
+			"Profile": u,
 		})
 	})
 
