@@ -12,10 +12,13 @@
 [![Auth0](https://img.shields.io/badge/Auth0-EB5424?style=for-the-badge&logo=auth0&logoColor=white)](https://auth0.com/)
 [![Gin](https://img.shields.io/badge/Gin-0089CF?style=for-the-badge&logo=gin&logoColor=white)](https://gin-gonic.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/qqwozz/OAuth_2.0/pulls)
+[![Stars](https://img.shields.io/github/stars/qqwozz/OAuth_2.0?style=for-the-badge&color=yellow)](https://github.com/qqwozz/OAuth_2.0/stargazers)
+[![Forks](https://img.shields.io/github/forks/qqwozz/OAuth_2.0?style=for-the-badge)](https://github.com/qqwozz/OAuth_2.0/network/members)
 
 <br/>
 
-[Features](#features) • [Quick Start](#quick-start) • [How It Works](#how-it-works) • [Routes](#routes)
+[Features](#features) • [Quick Start](#quick-start) • [How It Works](#how-it-works) • [Routes](#routes) • [Configuration](#configuration)
 
 </div>
 
@@ -32,6 +35,7 @@
 | **CSRF-защита** | Рандомный state-параметр при каждом входе |
 | **Серверные сессии** | Claims хранятся в зашифрованной cookie |
 | **Secure Logout** | Очистка сессии на стороне Auth0 |
+| **Avatar Proxy** | Проксирование аватарок через сервер (обход CORS) |
 
 </div>
 
@@ -148,6 +152,7 @@ go run main.go
 | `GET` | `/login` | - | Редирект на Auth0 |
 | `GET` | `/callback` | - | OAuth callback handler |
 | `GET` | `/profile` | **Yes** | Профиль пользователя |
+| `GET` | `/avatar` | **Yes** | Прокси аватарки пользователя |
 | `GET` | `/logout` | - | Выход из системы |
 | `GET` | `/ping` | - | Health check |
 
@@ -176,7 +181,7 @@ OAuth_2.0/
 │   └── config.go        # Config, env loading, OIDC provider
 ├── handlers/
 │   ├── auth.go          # Login, Logout, Callback
-│   └── pages.go         # Home, Profile
+│   └── pages.go         # Home, Profile, Avatar proxy
 ├── middleware/
 │   └── auth.go          # IsAuthenticated
 ├── models/
@@ -194,6 +199,18 @@ OAuth_2.0/
 ├── .env.example         # Environment template
 └── LICENSE              # MIT
 ```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
