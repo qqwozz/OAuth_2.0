@@ -195,10 +195,26 @@ OAuth_2.0/
 │   └── template/        # HTML templates
 ├── docs/
 │   ├── demo.gif         # Demo GIF
-│   └── demo.mp4         # Demo Video
+│   └── demovid.mp4      # Demo Video
+├── .github/
+│   └── workflows/       # GitHub Actions
 ├── .env.example         # Environment template
 └── LICENSE              # MIT
 ```
+
+---
+
+## GitHub Stats
+
+<div align="center">
+
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=qqwozz&show_icons=true&theme=gruvbox&bg_color=0d1117&border_color=30363d&title_color=58a6ff&text_color=c9d1d9)
+
+![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=qqwozz&theme=dark&background=0d1117&stroke=30363d&ring=58a6ff&fire=58a6ff&currStreakLabel=c9d1d9&sideLabels=f0f6fc&currStreakNum=c9d1d9&sideNums=c9d1d9&dates=8b949e)
+
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=qqwozz&layout=compact&theme=gruvbox&bg_color=0d1117&border_color=30363d&title_color=58a6ff&text_color=c9d1d9)
+
+</div>
 
 ---
 
