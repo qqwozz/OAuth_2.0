@@ -26,3 +26,6 @@ Thumbs.db
 
 # Air (hot reload)
 .air.toml
+
+# MiMoCode
+.mimocode/

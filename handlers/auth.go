@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +11,7 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
 
 	"go-auth-app/config"
 	"go-auth-app/utils"
@@ -118,6 +121,20 @@ func (h *AuthHandler) Callback(ctx *gin.Context) {
 		return
 	}
 
+	// Fetch userinfo from Auth0 if picture is missing in ID token
+	if _, ok := claims["picture"]; !ok {
+		userInfo, err := h.fetchUserInfo(ctx, token)
+		if err != nil {
+			log.Printf("Error fetching userinfo: %v", err)
+		} else {
+			for k, v := range userInfo {
+				if _, exists := claims[k]; !exists {
+					claims[k] = v
+				}
+			}
+		}
+	}
+
 	session.Set("user", claims)
 	if err := session.Save(); err != nil {
 		log.Printf("Error saving session: %v", err)
@@ -127,4 +144,26 @@ func (h *AuthHandler) Callback(ctx *gin.Context) {
 
 	log.Printf("User authenticated: %v", claims["email"])
 	ctx.Redirect(http.StatusTemporaryRedirect, "/profile")
+}
+
+func (h *AuthHandler) fetchUserInfo(ctx context.Context, token *oauth2.Token) (map[string]interface{}, error) {
+	userInfoURL := fmt.Sprintf("https://%s/userinfo", h.cfg.Domain)
+	req, err := http.NewRequestWithContext(ctx, "GET", userInfoURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var userInfo map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+		return nil, err
+	}
+
+	return userInfo, nil
 }

@@ -41,6 +41,7 @@ func RegisterRoutes(r *gin.Engine, auth *handlers.AuthHandler, pages *handlers.P
 	// Pages
 	r.GET("/", pages.Home)
 	r.GET("/profile", middleware.IsAuthenticated(), pages.Profile)
+	r.GET("/avatar", middleware.IsAuthenticated(), pages.Avatar)
 
 	// Auth
 	r.GET("/login", auth.Login)

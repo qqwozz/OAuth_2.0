@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -11,6 +13,8 @@ import (
 	"go-auth-app/config"
 	"go-auth-app/models"
 )
+
+var avatarClient = &http.Client{Timeout: 10 * time.Second}
 
 type PageHandler struct {
 	cfg *config.Config
@@ -54,4 +58,41 @@ func (h *PageHandler) Profile(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "profile.html", gin.H{
 		"Profile": u,
 	})
+}
+
+func (h *PageHandler) Avatar(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	user := session.Get("user")
+	if user == nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, "/")
+		return
+	}
+
+	claimsJSON, _ := json.Marshal(user)
+	var u models.UserInfo
+	if err := json.Unmarshal(claimsJSON, &u); err != nil || u.Picture == "" {
+		ctx.Redirect(http.StatusTemporaryRedirect, "/profile")
+		return
+	}
+
+	resp, err := avatarClient.Get(u.Picture)
+	if err != nil {
+		log.Printf("Error fetching avatar: %v", err)
+		ctx.Redirect(http.StatusTemporaryRedirect, u.Picture)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		ctx.Redirect(http.StatusTemporaryRedirect, u.Picture)
+		return
+	}
+
+	contentType := resp.Header.Get("Content-Type")
+	if contentType == "" {
+		contentType = "image/jpeg"
+	}
+	ctx.Header("Content-Type", contentType)
+	ctx.Header("Cache-Control", "public, max-age=3600")
+	io.Copy(ctx.Writer, resp.Body)
 }

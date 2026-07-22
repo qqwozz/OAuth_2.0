@@ -85,7 +85,7 @@ func Load() *Config {
 		ClientID:     cfg.ClientID,
 		ClientSecret: cfg.ClientSecret,
 		RedirectURL:  cfg.RedirectURL,
-		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
+		Scopes:       []string{oidc.ScopeOpenID, "profile", "email", "picture"},
 		Endpoint:     provider.Endpoint(),
 	}
 
