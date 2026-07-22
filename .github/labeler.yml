@@ -1,0 +1,29 @@
+# Labels for auto-labeling PRs
+go:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.go'
+
+docs:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - docs/**
+      - '*.md'
+
+frontend:
+  - changed-files:
+    - any-glob-to-any-file:
+      - web/template/**
+      - '*.html'
+
+config:
+  - changed-files:
+    - any-glob-to-any-file:
+      - config/**
+      - .env*
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - .github/**

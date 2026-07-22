@@ -1,0 +1,28 @@
+name: GitHub Streak Stats
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # Каждые 6 часов
+  workflow_dispatch:
+
+jobs:
+  update-streak:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Streak Stats
+        run: |
+          curl -s "https://github-readme-streak-stats.herokuapp.com/?user=qqwozz&theme=dark&background=0d1117&stroke=30363d&ring=58a6ff&fire=58a6ff&currStreakLabel=c9d1d9&sideLabels=f0f6fc&currStreakNum=c9d1d9&sideNums=c9d1d9&dates=8b949e&ringNum=c9d1d9&fireNum=c9d1d9" -o docs/streak.svg
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/streak.svg
+          git diff --staged --quiet || git commit -m "docs: update streak stats [skip ci]"
+          git push

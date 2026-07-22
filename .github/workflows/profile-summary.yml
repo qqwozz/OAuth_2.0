@@ -1,0 +1,30 @@
+name: Profile Summary Card
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # Каждые 6 часов
+  workflow_dispatch:
+
+jobs:
+  update-summary:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Profile Summary Cards
+        uses: vishnuravi/profile-summary-action@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          username: qqwozz
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add profile-summary-card/
+          git diff --staged --quiet || git commit -m "docs: update profile summary cards [skip ci]"
+          git push

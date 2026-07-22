@@ -1,0 +1,32 @@
+name: Activity Graph
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Раз в день
+  workflow_dispatch:
+
+jobs:
+  update-activity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Activity Graph
+        uses: ashutosh00710/github-activity-graph@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USER_NAME: qqwozz
+          LINE_WIDTH: 2
+          THEME: gruvbox
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add assets/activity-graph.svg
+          git diff --staged --quiet || git commit -m "docs: update activity graph [skip ci]"
+          git push

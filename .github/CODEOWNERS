@@ -1,0 +1,20 @@
+# Code Owners
+# These owners will be automatically requested for review
+# when someone opens a pull request.
+
+# Default owner for everything
+* @qqwozz
+
+# Go code
+*.go @qqwozz
+
+# Templates
+web/template/ @qqwozz
+
+# Configuration
+config/ @qqwozz
+.env* @qqwozz
+
+# Documentation
+*.md @qqwozz
+docs/ @qqwozz

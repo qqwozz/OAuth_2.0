@@ -1,0 +1,40 @@
+name: GitHub Metrics
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # Каждые 6 часов
+  workflow_dispatch:
+
+jobs:
+  update-metrics:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate GitHub Metrics
+        uses: anuraghazra/github-readme-stats@master
+        with:
+          username: qqwozz
+          show_icons: true
+          theme: gruvbox
+          bg_color: 0d1117
+          border_color: 30363d
+          title_color: 58a6ff
+          text_color: c9d1d9
+          icon_color: 58a6ff
+          hide_border: false
+          include_all_commits: true
+          count_private: true
+          card_width: 500
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add assets/stats.svg
+          git diff --staged --quiet || git commit -m "docs: update github metrics [skip ci]"
+          git push

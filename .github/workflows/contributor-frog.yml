@@ -1,0 +1,30 @@
+name: Contributor Frog
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Раз в день
+  workflow_dispatch:
+
+jobs:
+  generate-frog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Contributor Frog
+        uses: jaywcjlove/contributor-frog@main
+        with:
+          repository: qqwozz/OAuth_2.0
+          output: docs/contributors.svg
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/contributors.svg
+          git diff --staged --quiet || git commit -m "docs: update contributor frog [skip ci]"
+          git push

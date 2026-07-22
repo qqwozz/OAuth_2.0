@@ -1,0 +1,30 @@
+name: Snake Animation
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Раз в день
+  workflow_dispatch:
+
+jobs:
+  generate-snake:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Snake
+        uses: Platane/snk/svg-only@v3
+        with:
+          github_user_name: qqwozz
+          outputs: docs/snake.svg
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/snake.svg
+          git diff --staged --quiet || git commit -m "docs: update snake animation [skip ci]"
+          git push

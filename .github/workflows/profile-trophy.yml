@@ -1,0 +1,28 @@
+name: Profile Trophy
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"  # Каждые 12 часов
+  workflow_dispatch:
+
+jobs:
+  update-trophy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Trophy SVG
+        run: |
+          curl -s "https://github-profile-trophy.vercel.app/?username=qqwozz&theme=onedark&no-bg=true" -o docs/trophy.svg
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/trophy.svg
+          git diff --staged --quiet || git commit -m "docs: update profile trophy [skip ci]"
+          git push
