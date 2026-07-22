@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/demo.gif" width="100%" alt="OAuth 2.0 + Auth0 SSO Demo">
+<video src="docs/demovid.mp4" width="100%" controls autoplay loop muted></video>
 
 # OAuth 2.0 + Auth0 SSO
 
