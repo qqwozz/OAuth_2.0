@@ -45,8 +45,8 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) Logout(ctx *gin.Context) {
-	ctx.SetCookie("at", "", -1, "/", "", false, h.cfg.SecureCookie)
-	ctx.SetCookie("auth-sessions", "", -1, "/", "", false, h.cfg.SecureCookie)
+	ctx.SetCookie("at", "", -1, "/", "", h.cfg.SecureCookie, true)
+	ctx.SetCookie("auth-sessions", "", -1, "/", "", h.cfg.SecureCookie, true)
 
 	logoutURL := fmt.Sprintf("https://%s/v2/logout", h.cfg.Domain)
 
@@ -96,8 +96,8 @@ func (h *AuthHandler) Callback(ctx *gin.Context) {
 		return
 	}
 
-	// Save access token
-	ctx.SetCookie("at", token.AccessToken, 3600, "/", "", false, h.cfg.SecureCookie)
+	// Save access token (HttpOnly для защиты от XSS)
+	ctx.SetCookie("at", token.AccessToken, 3600, "/", "", h.cfg.SecureCookie, true)
 
 	// Verify ID token
 	rawIDToken, ok := token.Extra("id_token").(string)

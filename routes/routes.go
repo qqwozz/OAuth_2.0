@@ -2,7 +2,6 @@ package routes
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -14,6 +13,9 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine, auth *handlers.AuthHandler, pages *handlers.PageHandler, cfg *config.Config) {
+	// Security headers
+	r.Use(middleware.SecureCookies())
+
 	// Sessions
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
 	r.Use(sessions.Sessions("auth-sessions", store))
@@ -26,17 +28,6 @@ func RegisterRoutes(r *gin.Engine, auth *handlers.AuthHandler, pages *handlers.P
 	r.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
-
-	// Debug — only in debug mode
-	if os.Getenv("GIN_MODE") != "release" {
-		r.GET("/debug/env", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, gin.H{
-				"AUTH0_DOMAIN":    cfg.Domain != "",
-				"AUTH0_CLIENT_ID": cfg.ClientID != "",
-				"AUTH0_REDIRECT":  cfg.RedirectURL,
-			})
-		})
-	}
 
 	// Pages
 	r.GET("/", pages.Home)
