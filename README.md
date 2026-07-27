@@ -6,11 +6,6 @@
 
 Single Sign-On на Go с аутентификацией через Auth0 и Google.
 
-[![Go](https://img.shields.io/badge/Go-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev/)
-[![Auth0](https://img.shields.io/badge/Auth0-EB5424?style=flat-square&logo=auth0&logoColor=white)](https://auth0.com/)
-[![Gin](https://img.shields.io/badge/Gin-0089CF?style=flat-square&logo=gin&logoColor=white)](https://gin-gonic.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-
 </div>
 
 ---
